@@ -1,23 +1,22 @@
-# dwg_to_vector
-# DWG to GIS Automation (ArcPy)
+# DWG to GIS Automation with Data Cleaning and Topology Control (ArcPy)
 
 ## Project Overview
-This project implements an automated workflow for converting DWG files into GIS features using ArcPy, with a focus on data cleaning and topology validation.
+This project develops an automated ArcPy workflow to convert DWG files into GIS features, addressing common issues such as data inconsistency and topology errors.
 
 ## Features
-- Batch conversion from DWG to GIS feature classes
-- Data cleaning for invalid or abnormal geometries
-- Topology validation and error handling
-- Improved processing stability across datasets
+- Automated batch conversion from DWG to GIS feature classes
+- Data cleaning for invalid geometries and redundant elements
+- Topology validation with tolerance adjustment and error detection
+- Improved robustness for processing multiple datasets
 
 ## Tech Stack
 - ArcPy
 - ArcGIS Pro
 
 ## Results
-- Successfully processed multiple datasets
-- Improved success rate of topology validation
-- Resolved common ArcGIS errors (e.g., data locking issues)
+- Successfully processed multiple real-world datasets
+- Achieved stable topology validation results
+- Identified and resolved common ArcGIS issues (e.g., data locking)
 
-## Author
-Student project focused on GIS automation and data processing
+## Notes
+This project focuses on practical GIS data processing and automation.
