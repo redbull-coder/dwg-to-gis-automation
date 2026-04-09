@@ -1,29 +1,23 @@
 # dwg_to_vector
-基于 ArcPy 的 DWG 转矢量自动化处理与拓扑工具/​Automated DWG to Vector conversion and topology cleaning tool using ArcPy
-# 🌍 基于 ArcPy 的 DWG 转矢量自动化处理与拓扑修复工具
+# DWG to GIS Automation (ArcPy)
 
-### 🚀 项目简介
-本项目专注于解决 GIS 数据生产中 CAD (DWG) 转矢量过程中的几何冗余与拓扑报错痛点。通过 Python 自动化脚本，实现了从原始 CAD 数据到标准 GDB 数据库的稳定转换，并重点优化了要素拓扑质量。
+## Project Overview
+This project implements an automated workflow for converting DWG files into GIS features using ArcPy, with a focus on data cleaning and topology validation.
 
-### 🛠 研发历程（技术攻关笔记）
-在开发过程中，本项目经历了从“环境适配”到“逻辑攻关”的完整闭环：
+## Features
+- Batch conversion from DWG to GIS feature classes
+- Data cleaning for invalid or abnormal geometries
+- Topology validation and error handling
+- Improved processing stability across datasets
 
-1. **环境纠偏 (Naming Convention)**：
-   最初生成矢量时频繁遭遇路径或名称编码报错。通过 `测试_生成矢量名称.py` 进行压力测试，确定了**纯英文/拼音命名规范**，彻底规避了 `Error 999999` 编码冲突。
+## Tech Stack
+- ArcPy
+- ArcGIS Pro
 
-2. **拓扑修复 (Topology Cleaning)**：
-   由于原始 CAD 数据存在严重的几何冗余（重叠、微小缝隙），导致 ArcGIS 拓扑验证无法通过。
-   - **核心突破**：引入数据清洗算法，成功将原始 **126 条** 碎片要素精简为 **48 条** 逻辑一致的有效要素。
+## Results
+- Successfully processed multiple datasets
+- Improved success rate of topology validation
+- Resolved common ArcGIS errors (e.g., data locking issues)
 
-3. **质量闭环 (Quality Control)**：
-   编写 `测试_清洗数据对比.py`，通过 ObjectID 差集追踪与 `SHAPE@AREA` 面积比对，量化清洗效果，确保在修复拓扑的同时，原始地块面积与位置精度实现 0 损耗。
-
-### 📂 文件说明
-* **`dwg转矢量（含数据清洗拓扑）.py`**：核心转换脚本，集成 CAD 提取、几何清洗与要素重构逻辑。
-* **`测试_清洗数据对比.py`**：质量监控脚本，用于量化清洗前后要素数量及属性变化。
-* **`测试_生成矢量名称.py`**：环境兼容性测试工具，用于验证本地路径对中文/特殊字符的支持情况。
-
-### 🛠 技术栈
-* **语言**：Python 3.x
-* **库/工具**：ArcPy (ArcGIS Pro API)
-* **核心能力**：自动化空间分析、几何数据脱敏、拓扑修复算法
+## Author
+Student project focused on GIS automation and data processing
