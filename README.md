@@ -1,71 +1,89 @@
 # 🚀 DWG to GIS Automation (ArcPy)
 
-A practical Python tool for batch converting DWG (CAD) files into GIS data.
+> 一个高容错、可配置、日志完整的 DWG（CAD）批量转 GIS 自动化工具。  
+> 专为宗地图、规划数据等严格空间精度场景设计。
 
 ---
 
-## 📌 Background
+## 📌 背景与适用场景
 
-In GIS workflows, CAD (DWG) files often need to be:
-- Converted into GIS formats (GDB / Shapefile)
-- Reprojected to a standard coordinate system
-- Clipped by boundaries
-- Cleaned and standardized
+- 需要将大量 DWG 文件批量转换为 Geodatabase 要素类。
+- 要求数据强制定义 **CGCS2000 坐标系**。
+- 宗地数据 **严禁简化边界**（关闭面简化），仅做几何修复。
+- 必须进行 **拓扑验证**（如面要素不能重叠）。
 
-Manual processing in ArcGIS is time-consuming, repetitive, and error-prone.
-
-This project automates the entire workflow.
+本脚本完美解决以上痛点，并提供动态容差机制，自动适应 ArcPy 拓扑引擎的小瑕疵。
 
 ---
 
-## ⚙️ Features
+## ⚙️ 核心功能
 
-- Batch processing of DWG files
-- CAD to GIS conversion (Feature Class)
-- Coordinate system transformation
-- Spatial clipping
-- Data cleaning and standardization
-- Logging system
-- Error handling to keep batch running
-
----
-
-## 🧠 Tech Stack
-
-- Python
-- ArcPy (ArcGIS)
-- Logging
+| 模块               | 状态 / 说明                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| DWG 有效性预检     | 自动跳过小于 5KB 的损坏或空文件。                                           |
+| 坐标系定义         | 自动生成 `.prj` 文件，固定为 **CGCS2000 (EPSG:4490)**。                      |
+| CAD 转 GDB         | 调用 `CADToGeodatabase`，保留原始图层结构，输出至要素数据集。                |
+| 几何修复           | `RepairGeometry` 修复微小几何错误（默认开启）。                               |
+| 面简化             | **默认关闭** —— 宗地边界不宜因简化而改变形状。                               |
+| 删除重复要素       | **默认关闭** —— 防止误删合法重叠的地块。                                     |
+| 动态容差拓扑检查   | 从 0.0001m 起逐步放大容差，自动修复 ArcPy 引擎错误 `160342`，**强制面不重叠**。 |
+| 双通道日志         | 控制台实时输出 + 本地 `.log` 文件持久化。                                    |
 
 ---
 
-## 📂 Project Structure
+## 🧠 技术栈
+
+- Python 2.7 / 3.x (取决于 ArcGIS 版本)
+- ArcPy (ArcGIS Desktop / ArcGIS Pro)
+- 内置模块：`os`, `re`, `logging`, `datetime`
+
+---
+
+## 📂 项目结构
 
 ```text
 dwg-to-gis-automation/
-├── main.py          # Main script
-├── logs/            # Log files
-├── output/          # Results
+├── main.py                 # 主脚本（即当前文件）
+├── dwg_process_*.log       # 自动生成的日志文件
+├── output/                 # 输出的 GDB 存放目录（示例）
+│   └── ZongDi_Data.gdb
 └── README.md
 ```
 
 ---
 
-## 🚀 Usage
+## 🚀 快速开始
 
-### 1. Requirements
+### 1. 环境要求
 
-- ArcGIS / ArcGIS Pro
-- Python environment with ArcPy
+- **ArcGIS Desktop 10.x** 或 **ArcGIS Pro**（需安装 `ArcPy`）。
+- Python 环境已配置好 ArcPy 引用。
 
-### 2. Set input path
+### 2. 配置脚本参数
 
-Edit `main.py`:
+打开 `main.py`，修改顶部参数区：
 
 ```python
-cad_folder = r"D:\DWG_Data"
+# ==================== 参数设置 ====================
+cad_folder = r"C:/dwg_input"          # ← 改为你的 DWG 存放目录（支持子文件夹）
+gdb_path   = r"C:/output"             # ← 输出 GDB 的父目录
+gdb_name   = "ZongDi_Data.gdb"        # ← 输出 GDB 名称
+
+sr = arcpy.SpatialReference(4490)     # CGCS2000 3度带，如有需要可更换 EPSG 代码
+reference_scale = 1000                # CAD 转换参考比例
 ```
 
-### 3. Run
+### 3. 调整功能开关（按需修改）
+
+```python
+# ==================== 功能开关 ====================
+ENABLE_CLEANING      = True   # 修复几何（推荐开启）
+ENABLE_SIMPLIFY      = False  # 简化面（宗地数据务必保持 False）
+ENABLE_DELETE_EMPTY  = False  # 删除完全重复要素（慎开）
+ENABLE_TOPOLOGY      = True   # 拓扑检查（核心功能）
+```
+
+### 4. 运行脚本
 
 ```bash
 python main.py
@@ -73,43 +91,128 @@ python main.py
 
 ---
 
-## 🔄 Workflow
+## 🔄 详细工作流程
 
 ```
-DWG → Convert → Reproject → Clip → Clean → Output (GDB)
+1. 扫描 DWG 文件（递归子目录）
+2. 文件大小校验（跳过 <5KB 的文件）
+3. 写入同名 .prj 文件（CGCS2000）
+4. 调用 CADToGeodatabase 转换
+5. [可选] RepairGeometry 修复几何
+6. [可选] 动态容差拓扑验证（Must Not Overlap）
+7. 记录日志，进入下一个文件
 ```
 
 ---
 
-## 🧾 Logging
+## 🧾 日志说明
 
-- **INFO** – normal process
-- **WARNING** – potential issues
-- **ERROR** – failures
+每次运行会在脚本同级目录生成 `dwg_process_YYYYMMDD_HHMMSS.log`。
 
-Helps with debugging and tracking.
-
----
-
-## 💡 Highlights
-
-- Automates ArcGIS workflows
-- Supports batch processing
-- Structured and maintainable
-- Includes logging and error handling
+| 级别    | 含义                                     |
+|---------|------------------------------------------|
+| INFO    | 正常流程节点（文件开始、成功、计数）     |
+| WARNING | 文件过小跳过、拓扑容差重试等非致命问题   |
+| ERROR   | 文件转换失败、拓扑彻底失败等需关注事项   |
 
 ---
 
-## 🔧 Future Improvements
+## 🔧 高级配置详解
 
-- Config file (JSON / YAML)
-- Parallel processing
-- Layer filtering
-- GUI tool
-- ArcGIS Toolbox
+### 拓扑规则自定义
+
+修改 `TOPOLOGY_RULES` 字典即可增删规则：
+
+```python
+TOPOLOGY_RULES = {
+    "Must_Not_Overlap": True,       # 面不能重叠（宗地必开）
+    "Must_Not_Have_Gaps": False,    # 面不能有缝隙（视需求开启）
+    "Must_Not_Self_Intersect": True # 线/面自相交检查
+}
+```
+
+### 动态容差序列
+
+当拓扑引擎抛出 `160342` 错误（常见于微小几何错误）时，脚本会自动尝试更大容差。  
+序列可在 `TOLERANCE_SEQUENCE` 中修改：
+
+```python
+TOLERANCE_SEQUENCE = [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05]  # 单位：米
+```
+
+### 简化面容差（预留）
+
+尽管 `ENABLE_SIMPLIFY` 默认为 `False`，若需启用可调整容差：
+
+```python
+SIMPLIFY_TOLERANCE = "0.001 Meters"  # 仅当开关打开时生效
+```
 
 ---
 
-## 👨‍💻 Author
+## 💡 输出结果说明
 
-RedBull-coder
+转换后 GDB 结构如下：
+
+```
+ZongDi_Data.gdb
+├── CAD_<dwg文件名1> (要素数据集)
+│   ├── Annotation
+│   ├── MultiPatch
+│   ├── Point
+│   ├── Polygon          ← 主要宗地面要素
+│   └── Polyline
+├── CAD_<dwg文件名2>
+│   └── ...
+```
+
+每个 DWG 对应一个独立的要素数据集，命名规则为 `CAD_` + 合法文件名前缀。
+
+---
+
+## 🐛 常见问题排查
+
+| 现象                             | 可能原因与解决方法                                                                 |
+|----------------------------------|------------------------------------------------------------------------------------|
+| `ERROR 000732` 数据集不存在      | 输出 GDB 路径无写入权限，或磁盘空间不足。                                           |
+| `160342: 拓扑引擎出错`           | **脚本已内置自动修复**。若最终仍失败，请检查源 DWG 是否存在非法几何（如自相交环）。 |
+| 转换后要素类为空                 | DWG 中可能仅包含块参照而无实体几何，或参考比例尺 `reference_scale` 过小。           |
+| `SimplifyPolygon` 参数错误       | **本版本已修复**，使用 `"0 SquareMeters"` 作为最小面积参数。                        |
+| 控制台中文乱码                   | 在 ArcGIS 自带的 Python 窗口中运行，或设置系统编码为 UTF-8。                         |
+
+---
+
+## 🔮 未来规划
+
+- [ ] 外部配置文件支持（JSON / YAML）
+- [ ] 多进程并行加速
+- [ ] 按图层名称过滤（如只提取 `JZD` 层）
+- [ ] 封装为 ArcGIS Toolbox 工具
+- [ ] 支持输出 Shapefile 选项
+
+---
+
+## 👨‍💻 作者
+
+**RedBull-coder**  
+版本：企业级最终版（修复版）  
+最后更新：2026.04
+
+---
+
+> 📌 提示：宗地数据处理请务必保持 `ENABLE_SIMPLIFY = False`，以免边界偏移导致法律纠纷。
+```
+
+---
+
+### ✨ 主要优化点对比
+
+| 原版 README 不足               | 优化后增强内容                                 |
+|--------------------------------|------------------------------------------------|
+| 未提及功能开关的存在和作用     | 详细列出四个开关及推荐配置                     |
+| 未说明拓扑检查的具体规则       | 列出拓扑规则表，说明动态容差机制               |
+| 参数修改指引模糊               | 明确标注需修改的变量和代码位置                 |
+| 缺少输出结构说明               | 用树形图展示 GDB 内部层级                      |
+| 没有故障排除章节               | 添加常见错误代码及解决办法                     |
+| 未体现“修复版”的变更历史       | 在标题和页脚注明版本号及关键修复点             |
+
