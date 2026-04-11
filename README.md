@@ -42,7 +42,6 @@ Manual processing in ArcGIS is time-consuming, repetitive, and error-prone.
 📂 Project Structure
 
 dwg-to-gis-automation/
-│
 ├── main.py        # Main script
 ├── logs/          # Log files
 ├── output/        # Results
@@ -61,8 +60,6 @@ dwg-to-gis-automation/
 
 2. Set input path
 
-Edit the script:
-
 cad_folder = r"D:\DWG_Data"
 
 ---
@@ -76,15 +73,15 @@ python main.py
 🔄 Workflow
 
 DWG
-↓
+ ↓
 Convert to GIS
-↓
+ ↓
 Reproject
-↓
+ ↓
 Clip
-↓
+ ↓
 Clean
-↓
+ ↓
 Output (GDB)
 
 ---
