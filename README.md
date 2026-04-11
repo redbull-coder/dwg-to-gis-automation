@@ -1,13 +1,12 @@
-🚀 DWG to GIS Automation (ArcPy)
+# 🚀 DWG to GIS Automation (ArcPy)
 
-«A practical Python tool for batch converting DWG (CAD) files into GIS data.»
+A practical Python tool for batch converting DWG (CAD) files into GIS data.
 
 ---
 
-📌 Background
+## 📌 Background
 
 In GIS workflows, CAD (DWG) files often need to be:
-
 - Converted into GIS formats (GDB / Shapefile)
 - Reprojected to a standard coordinate system
 - Clipped by boundaries
@@ -15,23 +14,23 @@ In GIS workflows, CAD (DWG) files often need to be:
 
 Manual processing in ArcGIS is time-consuming, repetitive, and error-prone.
 
-👉 This project automates the entire workflow.
+This project automates the entire workflow.
 
 ---
 
-⚙️ Features
+## ⚙️ Features
 
 - Batch processing of DWG files
 - CAD to GIS conversion (Feature Class)
 - Coordinate system transformation
 - Spatial clipping
 - Data cleaning and standardization
-- Logging system for debugging and tracking
+- Logging system
 - Error handling to keep batch running
 
 ---
 
-🧠 Tech Stack
+## 🧠 Tech Stack
 
 - Python
 - ArcPy (ArcGIS)
@@ -39,84 +38,78 @@ Manual processing in ArcGIS is time-consuming, repetitive, and error-prone.
 
 ---
 
-📂 Project Structure
+## 📂 Project Structure
 
+```text
 dwg-to-gis-automation/
-├── main.py        # Main script
-├── logs/          # Log files
-├── output/        # Results
+├── main.py          # Main script
+├── logs/            # Log files
+├── output/          # Results
 └── README.md
+```
 
 ---
 
-🚀 Usage
+## 🚀 Usage
 
-1. Requirements
+### 1. Requirements
 
 - ArcGIS / ArcGIS Pro
 - Python environment with ArcPy
 
----
+### 2. Set input path
 
-2. Set input path
+Edit `main.py`:
 
+```python
 cad_folder = r"D:\DWG_Data"
+```
 
----
+### 3. Run
 
-3. Run
-
+```bash
 python main.py
+```
 
 ---
 
-🔄 Workflow
+## 🔄 Workflow
 
-DWG
- ↓
-Convert to GIS
- ↓
-Reproject
- ↓
-Clip
- ↓
-Clean
- ↓
-Output (GDB)
+```
+DWG → Convert → Reproject → Clip → Clean → Output (GDB)
+```
 
 ---
 
-🧾 Logging
+## 🧾 Logging
 
-The script generates logs during execution:
+- **INFO** – normal process
+- **WARNING** – potential issues
+- **ERROR** – failures
 
-- INFO: normal process
-- WARNING: potential issues
-- ERROR: failures
-
-👉 Helps with debugging and tracking.
+Helps with debugging and tracking.
 
 ---
 
-💡 Highlights
+## 💡 Highlights
 
-- Automates repetitive ArcGIS workflows
-- Handles batch data efficiently
-- Structured and maintainable code
+- Automates ArcGIS workflows
+- Supports batch processing
+- Structured and maintainable
 - Includes logging and error handling
 
 ---
 
-🔧 Future Improvements
+## 🔧 Future Improvements
 
-- Config file support (JSON / YAML)
+- Config file (JSON / YAML)
 - Parallel processing
 - Layer filtering
 - GUI tool
-- ArcGIS Toolbox integration
+- ArcGIS Toolbox
 
 ---
 
-👨‍💻 Author
+## 👨‍💻 Author
 
 RedBull-coder
